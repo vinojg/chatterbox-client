@@ -23,22 +23,48 @@
     <!-- your scripts -->
     <script src="env/config.js"></script>
     <script src="scripts/app.js"></script>
-    <script>app.init();
+    <script> 
+      $(document).ready(function() {
+        app.init();
+        setInterval(function() { 
+          app.fetch();
+        }, 3000);
+        
+  $( '.username' ).on('click', () => { app.send({
+    username: $('.user').val(),
+    text: $('.mes').val(), //'It\'s good to be the king',
+    roomname: $('.room').val()
+  }
+  ); 
+  });
+});
+        
+  
+  //         var message = {
+  //   username: 'Rafiki',
+  //   text: $('.mes').val(), //'It\'s good to be the king',
+  //   roomname: $('.room').val()
+  // };
+      //   $( '.username' ).on('click', () => { console.log($('.mes').val() + $('.room').val()); });
+      // });
       </script>
   </head>
   <body>
     <div id="main">
       <h1>Chatterbox</h1>
-      <form>
-      Message:<br>
-      <input type="text" name="userMessage">
-      <br>
+      <form action='http://parse.sfs.hackreactor.com/chatterbox/classes/messages' method="post">
       Room Name:<br>
-      <input type="text" name="roomname">
+      <input class = 'room' type="text" name="roomname">
       <br><br>
-      <input type="submit" value="Submit">
+      Username:<br>
+      <input class = 'mes' type="text" name="userName">
+      <br>
+      Message:<br>
+      <input class = 'user' type="text" name="userMessage">
+      <br>
+
       </form> 
-      <div ><button></button class='username'></div>
+      <div ><button class='username'>Submit</button></div>
       <!-- Your HTML goes here! -->
     </div>
     <div id="chats"></div>

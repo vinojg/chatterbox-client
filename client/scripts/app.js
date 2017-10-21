@@ -1,13 +1,20 @@
 // YOUR CODE HERE:
 var app = {
   server: 'http://parse.sfs.hackreactor.com/chatterbox/classes/messages',
-  container: {} 
+  container: {},
+  contained: $("input[type=text]").val(),
+  roomname: [] 
 };
 
-$('.username').on('click', 'button', console.log('clicked!'));
 
 app.init = function() {
   app.fetch();
+  // var message = {
+  //   username: 'Simba',
+  //   text: `It's good to be the king`, //'It\'s good to be the king',
+  //   roomname: 'lobby'
+  // };
+  // app.send(message);
 };
 
 app.send = function(message) {
@@ -21,7 +28,7 @@ app.send = function(message) {
   // This is the url you should use to communicate with the parse API server.
     url: app.server,
     type: 'POST',
-    data: message,
+    data: JSON.stringify(message),
     contentType: 'application/json',
     success: function (data) {
       console.log('chatterbox: Message sent');
@@ -36,22 +43,31 @@ app.send = function(message) {
 app.fetch = function() {
   $.ajax({
   // This is the url you should use to communicate with the parse API server.
-    url: app.server, // + '?limit=20&skip=', // + n * 20,
+    url: app.server,  //+ '?limit=20&skip=', // + n * 20,
     //  + '?limit=20&skip=' + n*20
     type: 'GET',
-    //data: message,
+    data: {
+      order: '-createdAt',
+      //limit: 3
+    },
     contentType: 'application/json',
     success: function (data) {
-      //console.log(data.results);
-      //console.log('chatterbox: Message sent', data);
-      // console.log(app.container);
+      app.clearMessages();
       app.container = data.results;
       _.each(app.container, function(message) {
+        if (!app.roomname.includes(message.roomname) && typeof(message.roomname) === 'string') {
+          app.roomname.push(message.roomname);
+        }
+      });
+      _.each(app.container, function(message) {
+        //app.renderMessage(JSON.stringify(message));
+        app.renderMessage(message.updatedAt);
+        app.renderMessage(message.roomname);  
         app.renderMessage(message.username);
         app.renderMessage(message.text);
         
       });
-      //console.log(app.container);
+      console.log(app.roomname);
     },
     error: function (data) {
     // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -69,12 +85,14 @@ app.clearMessages = function() {
 };
 
 app.renderMessage = function(message) {
+
   $('#chats').append(`<div>${message}</div>`);
 };
 
 app.renderRoom = function(roomName) {
   $('#roomSelect').append(`<div>${roomName}</div>`);
 };
+
 
 app.handleUsernameClick = function() {
   
@@ -84,10 +102,18 @@ app.handleSubmit = function() {
   
 };
 
+
+
 /*
+To do:
+
+Add images
 Create dropdown for rooms
 Filter messages by roomname
+
+Done:
 Post messages from submit form
+Live refresh
 */
 
 
